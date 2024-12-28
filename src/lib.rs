@@ -1,7 +1,6 @@
 mod utils;
 
-use std::fmt;
-
+use rand::random;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -17,20 +16,6 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
-}
-
-impl fmt::Display for Universe {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
-            for &cell in line {
-                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
-                write!(f, "{}", symbol)?;
-            }
-            write!(f, "\n")?;
-        }
-
-        Ok(())
-    }
 }
 
 impl Universe {
@@ -93,13 +78,7 @@ impl Universe {
         let height = 64;
 
         let cells = (0..width * height)
-            .map(|i| {
-                if i % 2 == 0 || i % 7 == 0 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
-            })
+            .map(|_| if random() { Cell::Dead } else { Cell::Alive })
             .collect();
 
         Universe {
@@ -107,10 +86,6 @@ impl Universe {
             height,
             cells,
         }
-    }
-
-    pub fn render(&self) -> String {
-        self.to_string()
     }
 
     pub fn width(&self) -> u32 {
@@ -123,5 +98,11 @@ impl Universe {
 
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
+    }
+}
+
+impl Default for Universe {
+    fn default() -> Self {
+        Self::new()
     }
 }
