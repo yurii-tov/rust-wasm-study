@@ -13,6 +13,7 @@ const height = universe.height();
 
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
+const counter = document.getElementById("game-of-life-counter");
 const canvas = document.getElementById("game-of-life-canvas");
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
@@ -54,16 +55,20 @@ const getIndex = (row, column) => {
 const drawCells = () => {
   const cellsPtr = universe.cells();
   const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+  var living = 0;
 
   ctx.beginPath();
 
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
       const idx = getIndex(row, col);
-      ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+      const dead = cells[idx] === Cell.Dead;
+      if (!dead) living += 1;
+      ctx.fillStyle = dead ? DEAD_COLOR : ALIVE_COLOR;
       ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
     }
   }
+  counter.innerHTML = `Living cells: ${living}`;
 
   ctx.stroke();
 };
