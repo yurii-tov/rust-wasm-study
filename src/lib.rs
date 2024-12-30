@@ -25,6 +25,7 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
+    generation: u32,
 }
 
 impl Universe {
@@ -92,12 +93,14 @@ impl Universe {
         }
 
         self.cells = next;
+        self.generation += 1;
     }
 
     pub fn new() -> Universe {
         utils::set_panic_hook();
         let width = 64;
         let height = 64;
+        let generation = 1;
 
         let cells = (0..width * height)
             .map(|_| if random() { Cell::Dead } else { Cell::Alive })
@@ -107,6 +110,7 @@ impl Universe {
             width,
             height,
             cells,
+            generation,
         }
     }
 
@@ -120,6 +124,14 @@ impl Universe {
 
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
+    }
+
+    pub fn living(&self) -> u32 {
+        self.cells.iter().filter(|x| **x == Cell::Alive).count() as u32
+    }
+
+    pub fn generation(&self) -> u32 {
+        self.generation
     }
 }
 
