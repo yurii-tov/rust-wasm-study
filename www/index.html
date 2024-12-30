@@ -21,8 +21,12 @@
     <noscript
       >This page contains webassembly and javascript content, please enable javascript in your
       browser.</noscript
-                >
+    >
     <button id="play-pause"></button>
+    <span
+      >Speed:
+      <input id="speed" type="range" min="1" max="100" value="50" />
+    </span>
     <pre id="game-of-life-stats"></pre>
     <canvas id="game-of-life-canvas"></canvas>
     <script src="./bootstrap.js"></script>

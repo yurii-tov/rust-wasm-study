@@ -7,54 +7,22 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
 // Construct the universe, and get its width and height.
+
 const universe = Universe.new();
 const width = universe.width();
 const height = universe.height();
 
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
-const stats = document.getElementById("game-of-life-stats");
+
 const canvas = document.getElementById("game-of-life-canvas");
 canvas.height = (CELL_SIZE + 1) * height + 1;
 canvas.width = (CELL_SIZE + 1) * width + 1;
-
 const ctx = canvas.getContext("2d");
 
-let animationId = null;
+// Grid/Cells
 
-const renderLoop = () => {
-  universe.tick();
-
-  drawGrid();
-  drawCells();
-
-  animationId = requestAnimationFrame(renderLoop);
-};
-
-const isPaused = () => {
-  return animationId === null;
-};
-
-const playPauseButton = document.getElementById("play-pause");
-
-const play = () => {
-  playPauseButton.textContent = "⏸";
-  renderLoop();
-};
-
-const pause = () => {
-  playPauseButton.textContent = "▶";
-  cancelAnimationFrame(animationId);
-  animationId = null;
-};
-
-playPauseButton.addEventListener("click", (event) => {
-  if (isPaused()) {
-    play();
-  } else {
-    pause();
-  }
-});
+const stats = document.getElementById("game-of-life-stats");
 
 const drawGrid = () => {
   ctx.beginPath();
@@ -113,5 +81,59 @@ canvas.addEventListener("click", (event) => {
   drawGrid();
   drawCells();
 });
+
+// The animation
+
+let animationId = null;
+let timer = 0;
+let speed = 0.5;
+
+const renderLoop = () => {
+  timer += speed;
+  if (timer >= 1) {
+    universe.tick();
+    timer = 0;
+  }
+  drawGrid();
+  drawCells();
+  animationId = requestAnimationFrame(renderLoop);
+};
+
+// Play/pause
+
+const isPaused = () => {
+  return animationId === null;
+};
+
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+  playPauseButton.textContent = "⏸";
+  renderLoop();
+};
+
+const pause = () => {
+  playPauseButton.textContent = "▶";
+  cancelAnimationFrame(animationId);
+  animationId = null;
+};
+
+playPauseButton.addEventListener("click", (_) => {
+  if (isPaused()) {
+    play();
+  } else {
+    pause();
+  }
+});
+
+// Speed control
+
+const speedInput = document.getElementById("speed");
+speedInput.value = Math.floor(speed * 100);
+speedInput.addEventListener("input", (_) => {
+  speed = Number(speedInput.value) / 100;
+})
+
+// Start the animation
 
 play();
