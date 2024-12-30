@@ -76,7 +76,7 @@ impl Universe {
                 };
 
                 match (cell, next_cell) {
-                    (Cell::Dead, Cell::Dead) | (Cell::Alive, Cell::Alive) => {}
+                    (a, b) if a == b => {}
                     _ => {
                         log!(
                             "[{} {}] Transition from {:?} to {:?}",
