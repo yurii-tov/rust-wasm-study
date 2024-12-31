@@ -92,7 +92,7 @@ canvas.addEventListener("click", (event) => {
 
 let animationId = null;
 let timer = 0;
-let speed = 0.5;
+let speed = 0.15;
 
 const renderLoop = () => {
   timer += speed;
