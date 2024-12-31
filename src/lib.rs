@@ -143,9 +143,8 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
-    pub fn insert_glider(&mut self, row: u32, column: u32) {
-        let live = [(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)];
-        let (width, height) = live.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
+    fn insert_thing(&mut self, alive_cells: &Vec<(u32, u32)>, row: u32, column: u32) {
+        let (width, height) = alive_cells.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
             (xmax.max(*x + 1), ymax.max(*y + 1))
         });
         let center = (width / 2, height / 2);
@@ -159,12 +158,16 @@ impl Universe {
                 self.cells[i] = Cell::Dead;
             }
         }
-        for (x, y) in live {
+        for (x, y) in alive_cells {
             let x = (row + x) % self.width;
             let y = (column + y) % self.height;
             let i = self.get_index(x, y);
             self.cells[i] = Cell::Alive;
         }
+    }
+
+    pub fn insert_glider(&mut self, row: u32, column: u32) {
+        self.insert_thing(&vec![(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)], row, column);
     }
 
     /// Set the width of the universe.
