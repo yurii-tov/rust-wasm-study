@@ -3,15 +3,6 @@ mod utils;
 use rand::random;
 use wasm_bindgen::prelude::*;
 
-extern crate web_sys;
-
-// A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
-
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -97,19 +88,6 @@ impl Universe {
                     // All other cells remain in the same state.
                     (otherwise, _) => otherwise,
                 };
-
-                match (cell, next_cell) {
-                    (a, b) if a == b => {}
-                    _ => {
-                        log!(
-                            "[{} {}] Transition from {:?} to {:?}",
-                            row,
-                            col,
-                            cell,
-                            next_cell
-                        );
-                    }
-                }
 
                 next[idx] = next_cell;
             }
