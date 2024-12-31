@@ -1,5 +1,7 @@
 mod utils;
 
+use std::str::FromStr;
+
 use rand::random;
 use wasm_bindgen::prelude::*;
 
@@ -18,6 +20,41 @@ impl Cell {
             Cell::Alive => Cell::Dead,
         };
     }
+}
+
+#[derive(Debug)]
+struct Pattern {
+    alive_cells: Vec<(u32, u32)>,
+    width: u32,
+    height: u32,
+}
+
+impl FromStr for Pattern {
+    fn from_str(schema: &str) -> Result<Self, Self::Err> {
+        let alive_cells: Vec<(u32, u32)> = schema
+            .lines()
+            .filter(|l| !l.starts_with("!"))
+            .enumerate()
+            .flat_map(|(i, l)| {
+                l.char_indices()
+                    .filter(|(_, c)| *c == 'O')
+                    .map(move |(j, _)| (i as u32, j as u32))
+            })
+            .collect();
+        if alive_cells.is_empty() {
+            return Err(format!("No alive cells in given pattern: [{}]", schema));
+        }
+        let (width, height) = alive_cells.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
+            (xmax.max(*x + 1), ymax.max(*y + 1))
+        });
+        Ok(Self {
+            alive_cells,
+            width,
+            height,
+        })
+    }
+
+    type Err = String;
 }
 
 #[wasm_bindgen]
@@ -143,22 +180,19 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
-    fn insert_pattern(&mut self, alive_cells: &Vec<(u32, u32)>, row: u32, column: u32) {
-        let (width, height) = alive_cells.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
-            (xmax.max(*x + 1), ymax.max(*y + 1))
-        });
-        let center = (width / 2, height / 2);
+    fn insert_pattern(&mut self, pattern: &Pattern, row: u32, column: u32) {
+        let center = (pattern.width / 2, pattern.height / 2);
         let row = ((row - center.0) + self.width) % self.width;
         let column = ((column - center.1) + self.height) % self.height;
-        for x in 0..width {
-            for y in 0..height {
+        for x in 0..pattern.width {
+            for y in 0..pattern.height {
                 let x = (row + x) % self.width;
                 let y = (column + y) % self.height;
                 let i = self.get_index(x, y);
                 self.cells[i] = Cell::Dead;
             }
         }
-        for (x, y) in alive_cells {
+        for (x, y) in &pattern.alive_cells {
             let x = (row + x) % self.width;
             let y = (column + y) % self.height;
             let i = self.get_index(x, y);
@@ -167,12 +201,20 @@ impl Universe {
     }
 
     pub fn insert_glider(&mut self, row: u32, column: u32) {
-        self.insert_pattern(&vec![(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)], row, column);
+        let glider = "!Name: Glider
+!Author: Richard K. Guy
+!The smallest, most common, and first discovered spaceship.
+!www.conwaylife.com/wiki/index.php?title=Glider
+.O
+..O
+OOO"
+        .parse()
+        .unwrap();
+        self.insert_pattern(&glider, row, column);
     }
 
     pub fn insert_pulsar(&mut self, row: u32, column: u32) {
-        let pulsar = parse_pattern(
-            "!Name: Pulsar
+        let pulsar: Pattern = "!Name: Pulsar
 !Author: John Conway
 !Despite its size, this is the fourth most common oscillator (and by far the most common of period greater than 2).
 !www.conwaylife.com/wiki/index.php?title=Pulsar
@@ -188,8 +230,7 @@ O....O.O....O
 O....O.O....O
 O....O.O....O
 
-..OOO...OOO",
-        );
+..OOO...OOO".parse().unwrap();
         self.insert_pattern(&pulsar, row, column);
     }
 
@@ -208,17 +249,4 @@ O....O.O....O
         self.height = height;
         self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
     }
-}
-
-fn parse_pattern(schema: &str) -> Vec<(u32, u32)> {
-    schema
-        .lines()
-        .filter(|l| !l.starts_with("!"))
-        .enumerate()
-        .flat_map(|(i, l)| {
-            l.char_indices()
-                .filter(|(_, c)| *c == 'O')
-                .map(move |(j, _)| (i as u32, j as u32))
-        })
-        .collect()
 }
