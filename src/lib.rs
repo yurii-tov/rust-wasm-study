@@ -22,10 +22,10 @@ impl Cell {
 
 #[wasm_bindgen]
 pub struct Universe {
-    width: u32,
-    height: u32,
     cells: Vec<Cell>,
-    generation: u32,
+    pub width: u32,
+    pub height: u32,
+    pub generation: u32,
 }
 
 impl Universe {
@@ -115,14 +115,6 @@ impl Universe {
         }
     }
 
-    pub fn width(&self) -> u32 {
-        self.width
-    }
-
-    pub fn height(&self) -> u32 {
-        self.height
-    }
-
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
     }
@@ -130,10 +122,6 @@ impl Universe {
     /// Get number of living cells
     pub fn living(&self) -> u32 {
         self.cells.iter().filter(|x| **x == Cell::Alive).count() as u32
-    }
-
-    pub fn generation(&self) -> u32 {
-        self.generation
     }
 
     pub fn toggle_cell(&mut self, row: u32, column: u32) {

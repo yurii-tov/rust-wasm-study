@@ -9,8 +9,8 @@ const ALIVE_COLOR = "#000000";
 // Construct the universe, and get its width and height.
 
 const universe = Universe.new();
-const width = universe.width();
-const height = universe.height();
+const width = universe.width;
+const height = universe.height;
 
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
@@ -59,7 +59,7 @@ const drawCells = () => {
       ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
     }
   }
-  stats.innerHTML = `Generation: ${universe.generation()}, Living cells: ${universe.living()}`;
+  stats.innerHTML = `Generation: ${universe.generation}, Living cells: ${universe.living()}`;
 
   ctx.stroke();
 };
