@@ -143,7 +143,7 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
-    fn insert_thing(&mut self, alive_cells: &Vec<(u32, u32)>, row: u32, column: u32) {
+    fn insert_pattern(&mut self, alive_cells: &Vec<(u32, u32)>, row: u32, column: u32) {
         let (width, height) = alive_cells.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
             (xmax.max(*x + 1), ymax.max(*y + 1))
         });
@@ -167,7 +167,26 @@ impl Universe {
     }
 
     pub fn insert_glider(&mut self, row: u32, column: u32) {
-        self.insert_thing(&vec![(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)], row, column);
+        self.insert_pattern(&vec![(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)], row, column);
+    }
+
+    pub fn insert_pulsar(&mut self, row: u32, column: u32) {
+        let pulsar = parse_pattern(
+            "..OOO...OOO
+
+O....O.O....O
+O....O.O....O
+O....O.O....O
+..OOO...OOO
+
+..OOO...OOO
+O....O.O....O
+O....O.O....O
+O....O.O....O
+
+..OOO...OOO",
+        );
+        self.insert_pattern(&pulsar, row, column);
     }
 
     /// Set the width of the universe.
@@ -185,4 +204,16 @@ impl Universe {
         self.height = height;
         self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
     }
+}
+
+fn parse_pattern(schema: &str) -> Vec<(u32, u32)> {
+    schema
+        .lines()
+        .enumerate()
+        .flat_map(|(i, l)| {
+            l.char_indices()
+                .filter(|(_, c)| *c == 'O')
+                .map(move |(j, _)| (i as u32, j as u32))
+        })
+        .collect()
 }
