@@ -172,7 +172,11 @@ impl Universe {
 
     pub fn insert_pulsar(&mut self, row: u32, column: u32) {
         let pulsar = parse_pattern(
-            "..OOO...OOO
+            "!Name: Pulsar
+!Author: John Conway
+!Despite its size, this is the fourth most common oscillator (and by far the most common of period greater than 2).
+!www.conwaylife.com/wiki/index.php?title=Pulsar
+..OOO...OOO
 
 O....O.O....O
 O....O.O....O
@@ -209,6 +213,7 @@ O....O.O....O
 fn parse_pattern(schema: &str) -> Vec<(u32, u32)> {
     schema
         .lines()
+        .filter(|l| !l.starts_with("!"))
         .enumerate()
         .flat_map(|(i, l)| {
             l.char_indices()
