@@ -110,6 +110,18 @@ impl Universe {
         }
     }
 
+    pub fn randomize(&mut self) {
+        self.cells = Self::random(self.width, self.height);
+        self.generation = 1;
+    }
+
+    pub fn clear(&mut self) {
+        for i in 0..self.width * self.height {
+            self.cells[i as usize] = Cell::Dead;
+        }
+        self.generation = 1;
+    }
+
     /// Generate random cells pattern
     fn random(w: u32, h: u32) -> Vec<Cell> {
         (0..(w * h))

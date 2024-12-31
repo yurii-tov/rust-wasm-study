@@ -126,13 +126,29 @@ playPauseButton.addEventListener("click", (_) => {
   }
 });
 
+// Randomize
+
+const randomizeButton = document.getElementById("randomize");
+randomizeButton.onclick = () => {
+  universe.randomize();
+  drawCells();
+};
+
+// Clear
+
+const clearButton = document.getElementById("clear");
+clearButton.onclick = () => {
+  universe.clear();
+  drawCells();
+};
+
 // Speed control
 
 const speedInput = document.getElementById("speed");
 speedInput.value = Math.floor(speed * 100);
 speedInput.addEventListener("input", (_) => {
   speed = Number(speedInput.value) / 100;
-})
+});
 
 // Start the animation
 
