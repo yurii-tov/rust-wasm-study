@@ -145,8 +145,9 @@ impl Universe {
 
     pub fn insert_glider(&mut self, row: u32, column: u32) {
         let live = [(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)];
-        let width = 3;
-        let height = 3;
+        let (width, height) = live.iter().fold((1, 1), |(xmax, ymax), (x, y)| {
+            (xmax.max(*x + 1), ymax.max(*y + 1))
+        });
         let center = (width / 2, height / 2);
         let row = ((row - center.0) + self.width) % self.width;
         let column = ((column - center.1) + self.height) % self.height;
