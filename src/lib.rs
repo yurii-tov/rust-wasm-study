@@ -101,18 +101,20 @@ impl Universe {
         utils::set_panic_hook();
         let width = 64;
         let height = 64;
-        let generation = 1;
-
-        let cells = (0..width * height)
-            .map(|_| if random() { Cell::Dead } else { Cell::Alive })
-            .collect();
 
         Universe {
             width,
             height,
-            cells,
-            generation,
+            cells: Self::random(width, height),
+            generation: 1,
         }
+    }
+
+    /// Generate random cells pattern
+    fn random(w: u32, h: u32) -> Vec<Cell> {
+        (0..(w * h))
+            .map(|_| if random() { Cell::Dead } else { Cell::Alive })
+            .collect()
     }
 
     pub fn cells(&self) -> *const Cell {
