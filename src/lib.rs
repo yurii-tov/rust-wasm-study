@@ -143,6 +143,29 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
+    pub fn insert_glider(&mut self, row: u32, column: u32) {
+        let width = 3;
+        let height = 3;
+        let center = (1, 1);
+        let live = [(0, 1), (1, 2), (2, 0), (2, 1), (2, 2)];
+        let row = ((row - center.0) + self.width) % self.width;
+        let column = ((column - center.1) + self.height) % self.height;
+        for x in 0..width {
+            for y in 0..height {
+                let x = (row + x) % self.width;
+                let y = (column + y) % self.height;
+                let i = self.get_index(x, y);
+                self.cells[i] = Cell::Dead;
+            }
+        }
+        for (x, y) in live {
+            let x = (row + x) % self.width;
+            let y = (column + y) % self.height;
+            let i = self.get_index(x, y);
+            self.cells[i] = Cell::Alive;
+        }
+    }
+
     /// Set the width of the universe.
     ///
     /// Resets all cells to the dead state.
