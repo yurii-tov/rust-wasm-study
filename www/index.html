@@ -6,13 +6,9 @@
     <style>
       body {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: left;
         gap: 0.3em;
         justify-content: center;
         background-color: linen;
@@ -29,20 +25,18 @@
       >This page contains webassembly and javascript content, please enable javascript in your
       browser.</noscript
     >
-    <span>
-      <span>
-        <button id="play-pause"></button>
-        <button id="randomize">Randomize</button>
-        <button id="clear">Clear</button>
-        <span
-          >Speed:
-          <input id="speed" type="range" min="1" max="100" value="50" />
-        </span>
-        <pre id="game-of-life-stats"></pre>
-      </span>
-      <span id="fps"></span>
-    </span>
+    <div id="fps"></div>
     <canvas id="game-of-life-canvas"></canvas>
+    <span>
+      <button id="play-pause"></button>
+      <button id="randomize">Randomize</button>
+      <button id="clear">Clear</button>
+      <span
+        >Speed:
+        <input id="speed" type="range" min="1" max="100" value="50" />
+      </span>
+    </span>
+
     <script src="./bootstrap.js"></script>
   </body>
 </html>
