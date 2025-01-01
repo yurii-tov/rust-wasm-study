@@ -122,7 +122,8 @@ const fps = new (class {
     let median = framesSorted[Math.floor(this.frames.length / 2)];
 
     // Render the statistics.
-    this.fps.textContent = `FPS: ${Math.round(fps)}, (last 100: min ${Math.round(min)}, max ${Math.round(max)}, mean ${Math.round(mean)}, median ${Math.round(median)})`.trim();
+    this.fps.textContent =
+      `FPS: ${Math.round(fps)}, (last 100: min ${Math.round(min)}, max ${Math.round(max)}, mean ${Math.round(mean)}, median ${Math.round(median)})`.trim();
   }
 })();
 
