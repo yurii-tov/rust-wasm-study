@@ -61,6 +61,8 @@ const drawCells = () => {
   ctx.stroke();
 };
 
+// Inserting patterns
+
 canvas.addEventListener("click", (event) => {
   const boundingRect = canvas.getBoundingClientRect();
 
