@@ -121,12 +121,15 @@ const fps = new (class {
       max = Math.max(this.frames[i], max);
     }
     let mean = sum / this.frames.length;
+    let framesSorted = this.frames.slice().sort((a, b) => a - b);
+    let median = framesSorted[Math.floor(this.frames.length / 2)];
 
     // Render the statistics.
     this.fps.textContent = `
 Frames per Second:
          latest = ${Math.round(fps)}
 avg of last 100 = ${Math.round(mean)}
+median of last 100 = ${Math.round(median)}
 min of last 100 = ${Math.round(min)}
 max of last 100 = ${Math.round(max)}
 `.trim();
@@ -141,7 +144,7 @@ let speed = 0.2;
 
 const renderLoop = () => {
   fps.render();
-  
+
   timer += speed;
   if (timer >= 1) {
     universe.tick();
