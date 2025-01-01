@@ -22,8 +22,6 @@ const ctx = canvas.getContext("2d");
 
 // Grid/Cells
 
-const stats = document.getElementById("game-of-life-stats");
-
 const drawGrid = () => {
   ctx.beginPath();
   ctx.strokeStyle = GRID_COLOR;
@@ -59,7 +57,6 @@ const drawCells = () => {
       ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
     }
   }
-  stats.innerHTML = `Generation: ${universe.generation}, Living cells: ${universe.living()}`;
 
   ctx.stroke();
 };
@@ -126,12 +123,13 @@ const fps = new (class {
 
     // Render the statistics.
     this.fps.textContent = `
-Frames per Second:
-         latest = ${Math.round(fps)}
-avg of last 100 = ${Math.round(mean)}
-median of last 100 = ${Math.round(median)}
-min of last 100 = ${Math.round(min)}
-max of last 100 = ${Math.round(max)}
+Frames per second
+-------------------------
+Latest:              ${Math.round(fps)}
+Median of last 100:  ${Math.round(median)}
+Average of last 100: ${Math.round(mean)}
+Min of last 100:     ${Math.round(min)}
+Max of last 100:     ${Math.round(max)}
 `.trim();
   }
 })();

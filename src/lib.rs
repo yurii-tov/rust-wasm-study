@@ -62,7 +62,6 @@ pub struct Universe {
     cells: Vec<Cell>,
     pub width: u32,
     pub height: u32,
-    pub generation: u32,
 }
 
 impl Universe {
@@ -131,7 +130,6 @@ impl Universe {
         }
 
         self.cells = next;
-        self.generation += 1;
     }
 
     pub fn new() -> Universe {
@@ -143,20 +141,17 @@ impl Universe {
             width,
             height,
             cells: Self::random(width, height),
-            generation: 1,
         }
     }
 
     pub fn randomize(&mut self) {
         self.cells = Self::random(self.width, self.height);
-        self.generation = 1;
     }
 
     pub fn clear(&mut self) {
         for i in 0..self.width * self.height {
             self.cells[i as usize] = Cell::Dead;
         }
-        self.generation = 1;
     }
 
     /// Generate random cells pattern
@@ -168,11 +163,6 @@ impl Universe {
 
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
-    }
-
-    /// Get number of living cells
-    pub fn living(&self) -> u32 {
-        self.cells.iter().filter(|x| **x == Cell::Alive).count() as u32
     }
 
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
