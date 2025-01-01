@@ -16,6 +16,11 @@
         gap: 0.3em;
         justify-content: center;
       }
+
+      #fps {
+        white-space: pre;
+        font-family: monospace;
+      }
     </style>
   </head>
   <body>
@@ -23,14 +28,19 @@
       >This page contains webassembly and javascript content, please enable javascript in your
       browser.</noscript
     >
-    <button id="play-pause"></button>
-    <button id="randomize">Randomize</button>
-    <button id="clear">Clear</button>
-    <span
-      >Speed:
-      <input id="speed" type="range" min="1" max="100" value="50" />
+    <span>
+      <span>
+        <button id="play-pause"></button>
+        <button id="randomize">Randomize</button>
+        <button id="clear">Clear</button>
+        <span
+          >Speed:
+          <input id="speed" type="range" min="1" max="100" value="50" />
+        </span>
+        <pre id="game-of-life-stats"></pre>
+      </span>
+      <span id="fps"></span>
     </span>
-    <pre id="game-of-life-stats"></pre>
     <canvas id="game-of-life-canvas"></canvas>
     <script src="./bootstrap.js"></script>
   </body>
