@@ -198,7 +198,6 @@ impl Universe {
 
     pub fn randomize(&mut self) {
         self.cells = Self::random(self.width, self.height);
-        self.reset_diff();
     }
 
     pub fn clear(&mut self) {

@@ -46,6 +46,7 @@ const getIndex = (row, column) => {
 };
 
 let cells = null;
+let diff = null;
 
 const drawCells = () => {
   ctx.beginPath();
@@ -156,9 +157,10 @@ const renderLoop = () => {
   timer += speed;
   if (timer >= 1) {
     universe.tick();
-    drawCells();
     timer = 0;
   }
+  drawCells();
+
   animationId = requestAnimationFrame(renderLoop);
 };
 
