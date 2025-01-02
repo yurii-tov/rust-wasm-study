@@ -46,7 +46,6 @@ const getIndex = (row, column) => {
 };
 
 let cells = null;
-let diff = null;
 
 const drawCells = () => {
   ctx.beginPath();
