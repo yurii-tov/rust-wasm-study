@@ -157,10 +157,10 @@ const renderLoop = () => {
   timer += speed;
   if (timer >= 1) {
     universe.tick();
+    drawGrid();
+    drawCells();
     timer = 0;
   }
-  drawGrid();
-  drawCells();
   animationId = requestAnimationFrame(renderLoop);
 };
 
