@@ -47,9 +47,23 @@ const getIndex = (row, column) => {
 
 let cells = null;
 
-const drawCells = () => {
+const forceDrawCells = () => {
   ctx.beginPath();
+  const cellsPtr = universe.cells();
+  cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      const idx = getIndex(row, col);
+      ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+      ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+    }
+  }
+  ctx.stroke();
+};
+
+const drawCells = () => {
   if (cells) {
+    ctx.beginPath();
     // Apply diff
     const diffPtr = universe.diff();
     const diff = new Int32Array(memory.buffer, diffPtr, width * height);
@@ -61,20 +75,11 @@ const drawCells = () => {
       const col = idx % width;
       ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
       ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+      ctx.stroke();
     }
   } else {
-    // Fill cells
-    const cellsPtr = universe.cells();
-    cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
-    for (let row = 0; row < height; row++) {
-      for (let col = 0; col < width; col++) {
-        const idx = getIndex(row, col);
-        ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
-        ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
-      }
-    }
+    forceDrawCells();
   }
-  ctx.stroke();
 };
 
 // Inserting patterns
@@ -99,7 +104,7 @@ canvas.addEventListener("click", (event) => {
     universe.toggle_cell(row, col);
   }
 
-  drawCells();
+  forceDrawCells();
 });
 
 // FPS counter
@@ -156,9 +161,9 @@ const renderLoop = () => {
   timer += speed;
   if (timer >= 1) {
     universe.tick();
+    drawCells();
     timer = 0;
   }
-  drawCells();
 
   animationId = requestAnimationFrame(renderLoop);
 };
@@ -195,7 +200,7 @@ playPauseButton.addEventListener("click", (_) => {
 const randomizeButton = document.getElementById("randomize");
 randomizeButton.onclick = () => {
   universe.randomize();
-  drawCells();
+  forceDrawCells();
 };
 
 // Clear
@@ -203,7 +208,7 @@ randomizeButton.onclick = () => {
 const clearButton = document.getElementById("clear");
 clearButton.onclick = () => {
   universe.clear();
-  drawCells();
+  forceDrawCells();
 };
 
 // Speed control
