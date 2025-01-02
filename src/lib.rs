@@ -117,10 +117,6 @@ impl Universe {
         count
     }
 
-    fn reset_diff(&mut self) {
-        self.diff.fill(-1);
-    }
-
     /// Get the dead and alive values of the entire universe.
     pub fn get_cells(&self) -> &[Cell] {
         &self.cells
@@ -139,7 +135,7 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn tick(&mut self) {
-        self.reset_diff();
+        self.diff.fill(-1);
         let mut diff_index: usize = 0;
         for row in 0..self.height {
             for col in 0..self.width {
