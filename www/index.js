@@ -99,7 +99,6 @@ canvas.addEventListener("click", (event) => {
     universe.toggle_cell(row, col);
   }
 
-  drawGrid();
   drawCells();
 });
 
@@ -157,7 +156,6 @@ const renderLoop = () => {
   timer += speed;
   if (timer >= 1) {
     universe.tick();
-    drawGrid();
     drawCells();
     timer = 0;
   }
@@ -217,4 +215,5 @@ speedInput.addEventListener("input", (_) => {
 
 // Start the animation
 
+drawGrid();
 play();
