@@ -60,7 +60,8 @@ impl FromStr for Pattern {
 #[wasm_bindgen]
 pub struct Universe {
     cells: Vec<Cell>,
-    next: Vec<Cell>,
+    buffer: Vec<Cell>,
+    diff: Vec<i32>,
     pub width: u32,
     pub height: u32,
 }
@@ -116,6 +117,10 @@ impl Universe {
         count
     }
 
+    fn reset_diff(&mut self) {
+        self.diff.fill(-1);
+    }
+
     /// Get the dead and alive values of the entire universe.
     pub fn get_cells(&self) -> &[Cell] {
         &self.cells
@@ -134,6 +139,8 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn tick(&mut self) {
+        self.reset_diff();
+        let mut diff_index: usize = 0;
         for row in 0..self.height {
             for col in 0..self.width {
                 let idx = self.get_index(row, col);
@@ -156,11 +163,23 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
-                self.next[idx] = next_cell;
+                match (cell, next_cell) {
+                    (a, b) if a != b => {
+                        self.diff[diff_index] = idx as i32;
+                        diff_index += 1;
+                    }
+                    _ => {}
+                }
+
+                self.buffer[idx] = next_cell;
             }
         }
 
-        swap(&mut self.cells, &mut self.next);
+        swap(&mut self.cells, &mut self.buffer);
+    }
+
+    pub fn diff(&self) -> *const i32 {
+        self.diff.as_ptr()
     }
 
     pub fn new() -> Universe {
@@ -172,12 +191,14 @@ impl Universe {
             width,
             height,
             cells: Self::random(width, height),
-            next: vec![Cell::Dead; (width * height) as usize],
+            buffer: vec![Cell::Dead; (width * height) as usize],
+            diff: vec![-1; (width * height) as usize],
         }
     }
 
     pub fn randomize(&mut self) {
         self.cells = Self::random(self.width, self.height);
+        self.reset_diff();
     }
 
     pub fn clear(&mut self) {
