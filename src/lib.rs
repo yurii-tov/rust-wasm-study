@@ -167,11 +167,6 @@ impl Universe {
                 self.buffer[idx] = next_cell;
             }
         }
-        log!(
-            "Changed: {}, sum: {}",
-            self.diff.iter().filter(|x| **x != -1).count(),
-            self.diff.iter().filter(|x| **x != -1).sum::<i32>()
-        );
         swap(&mut self.cells, &mut self.buffer);
     }
 
