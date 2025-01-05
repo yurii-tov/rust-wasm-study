@@ -185,30 +185,25 @@ impl Universe {
     pub fn new() -> Universe {
         utils::set_panic_hook();
 
-        Universe {
-            cells: Self::random(),
+        let mut u = Universe {
+            cells: [Cell::Dead; SIZE],
             buffer: [Cell::Dead; SIZE],
             diff: [-1; SIZE],
-        }
+        };
+        u.randomize();
+        u
     }
 
     pub fn randomize(&mut self) {
-        self.cells = Self::random();
+        for i in 0..SIZE {
+            self.cells[i] = if random() { Cell::Dead } else { Cell::Alive };
+        }
     }
 
     pub fn clear(&mut self) {
         for i in 0..SIZE {
             self.cells[i as usize] = Cell::Dead;
         }
-    }
-
-    /// Generate random cells pattern
-    fn random() -> [Cell; SIZE] {
-        let mut cells = [Cell::Dead; SIZE];
-        for i in 0..SIZE {
-            cells[i] = if random() { Cell::Dead } else { Cell::Alive };
-        }
-        cells
     }
 
     pub fn cells(&self) -> *const Cell {
