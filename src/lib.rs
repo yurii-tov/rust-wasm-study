@@ -60,38 +60,32 @@ impl FromStr for Pattern {
     type Err = String;
 }
 
+const WIDTH: u32 = 120;
+const HEIGHT: u32 = 120;
+const SIZE: usize = 120 * 120;
+
 #[wasm_bindgen]
 pub struct Universe {
-    cells: Vec<Cell>,
-    buffer: Vec<Cell>,
-    diff: Vec<i32>,
-    pub width: u32,
-    pub height: u32,
+    cells: [Cell; SIZE],
+    buffer: [Cell; SIZE],
+    diff: [i32; SIZE],
 }
 
 impl Universe {
     fn get_index(&self, row: u32, column: u32) -> usize {
-        (row * self.width + column) as usize
+        (row * WIDTH + column) as usize
     }
 
     fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
 
-        let north = if row == 0 { self.height - 1 } else { row - 1 };
+        let north = if row == 0 { HEIGHT - 1 } else { row - 1 };
 
-        let south = if row == self.height - 1 { 0 } else { row + 1 };
+        let south = if row == HEIGHT - 1 { 0 } else { row + 1 };
 
-        let west = if column == 0 {
-            self.width - 1
-        } else {
-            column - 1
-        };
+        let west = if column == 0 { WIDTH - 1 } else { column - 1 };
 
-        let east = if column == self.width - 1 {
-            0
-        } else {
-            column + 1
-        };
+        let east = if column == WIDTH - 1 { 0 } else { column + 1 };
 
         let nw = self.get_index(north, west);
         count += self.cells[nw] as u8;
@@ -140,8 +134,8 @@ impl Universe {
     pub fn tick(&mut self) {
         self.diff.fill(-1);
         let mut diff_index: usize = 0;
-        for row in 0..self.height {
-            for col in 0..self.width {
+        for row in 0..HEIGHT {
+            for col in 0..WIDTH {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
@@ -173,7 +167,11 @@ impl Universe {
                 self.buffer[idx] = next_cell;
             }
         }
-
+        log!(
+            "Changed: {}, sum: {}",
+            self.diff.iter().filter(|x| **x != -1).count(),
+            self.diff.iter().filter(|x| **x != -1).sum::<i32>()
+        );
         swap(&mut self.cells, &mut self.buffer);
     }
 
@@ -181,35 +179,41 @@ impl Universe {
         self.diff.as_ptr()
     }
 
+    pub fn width(&self) -> u32 {
+        WIDTH
+    }
+
+    pub fn height(&self) -> u32 {
+        HEIGHT
+    }
+
     pub fn new() -> Universe {
         utils::set_panic_hook();
-        let width = 120;
-        let height = 120;
 
         Universe {
-            width,
-            height,
-            cells: Self::random(width, height),
-            buffer: vec![Cell::Dead; (width * height) as usize],
-            diff: vec![-1; (width * height) as usize],
+            cells: Self::random(),
+            buffer: [Cell::Dead; SIZE],
+            diff: [-1; SIZE],
         }
     }
 
     pub fn randomize(&mut self) {
-        self.cells = Self::random(self.width, self.height);
+        self.cells = Self::random();
     }
 
     pub fn clear(&mut self) {
-        for i in 0..self.width * self.height {
+        for i in 0..SIZE {
             self.cells[i as usize] = Cell::Dead;
         }
     }
 
     /// Generate random cells pattern
-    fn random(w: u32, h: u32) -> Vec<Cell> {
-        (0..(w * h))
-            .map(|_| if random() { Cell::Dead } else { Cell::Alive })
-            .collect()
+    fn random() -> [Cell; SIZE] {
+        let mut cells = [Cell::Dead; SIZE];
+        for i in 0..SIZE {
+            cells[i] = if random() { Cell::Dead } else { Cell::Alive };
+        }
+        cells
     }
 
     pub fn cells(&self) -> *const Cell {
@@ -223,19 +227,19 @@ impl Universe {
 
     fn insert_pattern(&mut self, pattern: &Pattern, row: u32, column: u32) {
         let center = (pattern.width / 2, pattern.height / 2);
-        let row = ((row - center.0) + self.width) % self.width;
-        let column = ((column - center.1) + self.height) % self.height;
+        let row = ((row - center.0) + WIDTH) % WIDTH;
+        let column = ((column - center.1) + HEIGHT) % HEIGHT;
         for x in 0..pattern.width {
             for y in 0..pattern.height {
-                let x = (row + x) % self.width;
-                let y = (column + y) % self.height;
+                let x = (row + x) % WIDTH;
+                let y = (column + y) % HEIGHT;
                 let i = self.get_index(x, y);
                 self.cells[i] = Cell::Dead;
             }
         }
         for (x, y) in &pattern.alive_cells {
-            let x = (row + x) % self.width;
-            let y = (column + y) % self.height;
+            let x = (row + x) % WIDTH;
+            let y = (column + y) % HEIGHT;
             let i = self.get_index(x, y);
             self.cells[i] = Cell::Alive;
         }
@@ -273,21 +277,5 @@ O....O.O....O
 
 ..OOO...OOO".parse().unwrap();
         self.insert_pattern(&pulsar, row, column);
-    }
-
-    /// Set the width of the universe.
-    ///
-    /// Resets all cells to the dead state.
-    pub fn set_width(&mut self, width: u32) {
-        self.width = width;
-        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
-    }
-
-    /// Set the height of the universe.
-    ///
-    /// Resets all cells to the dead state.
-    pub fn set_height(&mut self, height: u32) {
-        self.height = height;
-        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
     }
 }
