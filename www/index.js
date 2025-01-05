@@ -72,7 +72,6 @@ const drawCells = () => {
   for (let i = 0; i <= diff.length; i++) {
     const idx = diff[i];
     if (idx == -1) return;
-    cells[idx] = cells[idx] === Cell.Dead ? Cell.Alive : Cell.Dead;
     const row = Math.floor(idx / width);
     const col = idx % width;
     ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
