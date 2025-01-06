@@ -50,7 +50,7 @@ let cells = null;
 const forceDrawCells = () => {
   ctx.beginPath();
   const cellsPtr = universe.cells();
-  cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+  cells = cells == null ? new Uint8Array(memory.buffer, cellsPtr, width * height) : cells;
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
       const idx = getIndex(row, col);
